@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: foo-pod-example
+  labels:
+    app: web
+    foo: bar
+    bar: baz
+spec:
+  containers:
+    - name: foo-pod-example
+      image: foopod/example
+      command: ["foo"]
+      args: ["--example", "1"]

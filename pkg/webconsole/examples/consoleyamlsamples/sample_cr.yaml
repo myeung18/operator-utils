@@ -1,0 +1,12 @@
+apiVersion: app.example.com/v1alpha1
+kind: PodSet
+metadata:
+  name: example-podset
+  annotations:
+    consolekind: ConsoleYAMLSample
+    consolename: podset-example-cr
+    consoledesc: PodSet example cr
+    consoletitle: Podset example cr
+spec:
+  # Add fields here
+  replicas: 1

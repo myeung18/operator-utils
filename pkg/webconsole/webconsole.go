@@ -6,6 +6,7 @@ import (
 	"github.com/RHsyseng/operator-utils/pkg/webconsole/factory"
 	"github.com/ghodss/yaml"
 	"github.com/gobuffalo/packr/v2"
+	"strings"
 )
 
 func LoadWebConsoleYamlSamples(path string, folder string) (map[string]string, error) {
@@ -13,10 +14,12 @@ func LoadWebConsoleYamlSamples(path string, folder string) (map[string]string, e
 }
 
 func loadFiles(path string, folder string) (map[string]string, error) {
-	box := packr.New("folder name", path+"/"+folder)
+	filename := strings.Join([]string{path, folder}, "/")
+
+	box := packr.New("folder name", filename)
 	if box.List() == nil {
 		fmt.Println("file not found")
-		return nil, fmt.Errorf("%s %s not found ", path, folder)
+		return nil, fmt.Errorf("%s not found ", filename)
 	}
 
 	resMap := make(map[string]string)
@@ -40,6 +43,8 @@ func loadFiles(path string, folder string) (map[string]string, error) {
 		_, err = creator.Create(yamlStr)
 		if err != nil {
 			resMap[filename] = err.Error()
+		} else if creator == factory.NullCreatorImpl {
+			resMap[filename] =  "Unknown web console yaml"
 		} else {
 			resMap[filename] =  "processed"
 		}

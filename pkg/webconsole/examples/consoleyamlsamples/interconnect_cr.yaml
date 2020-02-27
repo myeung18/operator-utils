@@ -1,0 +1,10 @@
+apiVersion: interconnectedcloud.github.io/v1alpha1
+kind: Interconnect
+metadata:
+  name: amq-interconnect
+  namespace: <your namespace>
+spec:
+  deploymentPlan:
+    size: 2
+    role: interior
+    placement: Any

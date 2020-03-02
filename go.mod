@@ -1,4 +1,4 @@
-module github.com/RHsyseng/operator-utils
+module github.com/myeung18/operator-utils
 
 go 1.12
 
@@ -20,10 +20,8 @@ require (
 	github.com/gobuffalo/packr/v2 v2.5.2
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
-	github.com/google/btree v1.0.0 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/googleapis/gnostic v0.3.1
-	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7 // indirect
 	github.com/imdario/mergo v0.3.8 // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/openshift/api v0.0.0-20200217161739-c99157bc6492

@@ -1,9 +1,9 @@
 package test
 
 import (
-	"github.com/RHsyseng/operator-utils/pkg/resource"
-	"github.com/RHsyseng/operator-utils/pkg/resource/compare"
-	"github.com/RHsyseng/operator-utils/pkg/resource/test"
+	"github.com/myeung18/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/resource/compare"
+	"github.com/myeung18/operator-utils/pkg/resource/test"
 	oappsv1 "github.com/openshift/api/apps/v1"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"

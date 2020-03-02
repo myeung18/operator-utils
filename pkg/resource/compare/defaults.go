@@ -2,7 +2,7 @@ package compare
 
 import (
 	"fmt"
-	"github.com/RHsyseng/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/resource"
 	oappsv1 "github.com/openshift/api/apps/v1"
 	buildv1 "github.com/openshift/api/build/v1"
 	routev1 "github.com/openshift/api/route/v1"

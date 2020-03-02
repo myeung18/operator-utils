@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"github.com/RHsyseng/operator-utils/pkg/webconsole/creator"
+	"github.com/myeung18/operator-utils/pkg/webconsole/creator"
 )
 
 const (

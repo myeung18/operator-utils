@@ -2,8 +2,8 @@ package write
 
 import (
 	"context"
-	"github.com/RHsyseng/operator-utils/pkg/resource"
-	"github.com/RHsyseng/operator-utils/pkg/resource/write/hooks"
+	"github.com/myeung18/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/resource/write/hooks"
 	newerror "github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"

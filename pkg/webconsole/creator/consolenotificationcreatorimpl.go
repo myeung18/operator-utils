@@ -1,7 +1,7 @@
 package creator
 
 import (
-	"github.com/RHsyseng/operator-utils/pkg/webconsole/utils"
+	"github.com/myeung18/operator-utils/pkg/webconsole/utils"
 	"github.com/ghodss/yaml"
 	consolev1 "github.com/openshift/api/console/v1"
 )

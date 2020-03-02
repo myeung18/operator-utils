@@ -2,7 +2,7 @@ package creator
 
 import (
 	"errors"
-	"github.com/RHsyseng/operator-utils/pkg/webconsole/utils"
+	"github.com/myeung18/operator-utils/pkg/webconsole/utils"
 	"github.com/ghodss/yaml"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"strconv"

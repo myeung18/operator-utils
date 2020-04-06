@@ -1,8 +1,11 @@
 package openshift
 
 import (
+	"errors"
 	"github.com/myeung18/operator-utils/internal/platform"
 	"k8s.io/client-go/rest"
+	"strconv"
+	"strings"
 )
 
 /*
@@ -52,4 +55,60 @@ func MapKnownVersion(info platform.PlatformInfo) platform.OpenShiftVersion {
 		"1.16+": "4.3",
 	}
 	return platform.OpenShiftVersion{Version: k8sToOcpMap[info.K8SVersion]}
+}
+
+func CompareOpenShiftVersion(cfg *rest.Config, version string) (int, error) {
+	isOcp, err := IsOpenShift(cfg)
+	if err != nil {
+		return -1, err
+	}
+	if !isOcp {
+		return -1, errors.New("There is no OpenShift platform detected.")
+	}
+	info, err := GetPlatformInfo(cfg)
+	if err != nil {
+		return -1, err
+	}
+	curVersion := MapKnownVersion(info)
+	return CompareVersion(curVersion.Version, version)
+}
+
+/*
+Supported version format : Major.Minor.Patch
+e.g.: 2.3.4
+return:
+	-1 : if ver1 < ver2
+	 0 : if ver1 == ver2
+     1 : if ver1 > ver2
+The int value returned should be discarded if err is not nil
+ */
+func CompareVersion(ver1 string, ver2 string) (int, error) {
+	ver1Nums := strings.Split(ver1, ".")
+	ver2Nums := strings.Split(ver2, ".")
+	length := len(ver1Nums)
+	if length < len(ver2Nums) {
+		length = len(ver2Nums)
+	}
+	for i := 0; i < length; i++ {
+		v1 := 0
+		if i < len(ver1Nums) {
+			if v1, err := strconv.Atoi(ver1Nums[i]); err != nil {
+				_ = v1
+				return -1, err
+			}
+		}
+		v2 := 0
+		if i < len(ver2Nums) {
+			if v2, err := strconv.Atoi(ver2Nums[i]); err != nil {
+				_ = v2
+				return -1, err
+			}
+		}
+		if v1 > v2 {
+			return 1, nil
+		} else if v2 > v1 {
+			return -1, nil
+		}
+	}
+	return 0, nil
 }

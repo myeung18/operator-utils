@@ -1,7 +1,7 @@
 package openshift
 
 import (
-	"github.com/RHsyseng/operator-utils/internal/platform"
+	"github.com/myeung18/operator-utils/internal/platform"
 	"k8s.io/client-go/rest"
 )
 
@@ -48,6 +48,8 @@ func MapKnownVersion(info platform.PlatformInfo) platform.OpenShiftVersion {
 		"1.10+": "3.10",
 		"1.11+": "3.11",
 		"1.13+": "4.1",
+		"1.14+": "4.2",
+		"1.16+": "4.3",
 	}
 	return platform.OpenShiftVersion{Version: k8sToOcpMap[info.K8SVersion]}
 }

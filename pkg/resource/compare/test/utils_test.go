@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/RHsyseng/operator-utils/pkg/resource/compare"
+	"github.com/myeung18/operator-utils/pkg/resource/compare"
 	oappsv1 "github.com/openshift/api/apps/v1"
 	routev1 "github.com/openshift/api/route/v1"
 	"github.com/stretchr/testify/assert"

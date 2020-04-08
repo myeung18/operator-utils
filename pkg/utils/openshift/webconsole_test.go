@@ -3,6 +3,7 @@ package openshift
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
+	"github.com/myeung18/operator-utils/internal/platform"
 	"github.com/myeung18/operator-utils/pkg/utils"
 	oappsv1 "github.com/openshift/api/apps/v1"
 	v1 "github.com/openshift/api/console/v1"
@@ -21,6 +22,11 @@ func TestOpenshift(t *testing.T) {
 
 	fmt.Println(kubeconfig)
 	info, err := GetPlatformInfo(kubeconfig)
+
+	fmt.Println("------")
+	info2, err := LookupOpenShiftVersion(kubeconfig)
+	fmt.Println("info2:", info2, " - ",  MapKnownVersion(info))
+
 	versionStr := MapKnownVersion(info)
 	fmt.Println("info:", info, "ocp:", versionStr)
 
@@ -31,11 +37,17 @@ func TestOpenshift(t *testing.T) {
 
 	fmt.Println(info.K8SVersion)
 	fmt.Println(IsOpenShift(kubeconfig))
+}
 
-	fmt.Println("------")
-	info2, err := LookupOpenShiftVersion(kubeconfig)
-	fmt.Println("info2:", info2, MapKnownVersion(info))
-
+func TestVersionLookup(t *testing.T) {
+	kubeconfig, err := utils.GetConfig()
+	if err != nil {
+		fmt.Println(err)
+	}
+	info, err := platform.K8SBasedPlatformVersioner{}.TestLookupVersion4(nil, kubeconfig)
+	fmt.Println("info4:", info)
+	info, err = platform.K8SBasedPlatformVersioner{}.TestLookupVersion3(nil, kubeconfig)
+	fmt.Println("info3:", info)
 }
 
 func compareVersion_xx(ver1 string, ver2 string) (int, error) {

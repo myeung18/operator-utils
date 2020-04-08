@@ -2,6 +2,7 @@ package platform
 
 import (
 	"encoding/json"
+	"fmt"
 	openapi_v2 "github.com/googleapis/gnostic/OpenAPIv2"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/version"
@@ -102,6 +103,8 @@ func (pv K8SBasedPlatformVersioner) LookupOpenShiftVersion(client Discoverer, cf
 		log.Info("issue occurred while fetching OpenAPISchema")
 		return osv, err
 	}
+	log.Info("doc info >>>+: ", "doc", doc.Info)
+	fmt.Println("doc info >>>: ", doc.Info)
 
 	switch doc.Info.Version[:4] {
 	case "v3.1":
@@ -132,5 +135,64 @@ func (pv K8SBasedPlatformVersioner) LookupOpenShiftVersion(client Discoverer, cf
 		}
 		osv.Version = cvi.Status.Desired.Version
 	}
+	return osv, nil
+}
+
+func (pv K8SBasedPlatformVersioner) TestLookupVersion3(client Discoverer, cfg *rest.Config) (OpenShiftVersion, error) {
+	osv := OpenShiftVersion{}
+	client, _, err := pv.DefaultArgs(nil, nil)
+	if err != nil {
+		log.Info("issue occurred while defaulting args for version lookup")
+		return osv, err
+	}
+	doc, err := client.OpenAPISchema()
+	if err != nil {
+		log.Info("issue occurred while fetching OpenAPISchema")
+		return osv, err
+	}
+	log.Info("doc info >>>+: ", "doc", doc.Info)
+
+	switch doc.Info.Version[:4] {
+	case "v3.1":
+		osv.Version = doc.Info.Version
+	default:
+		log.Info("default ver3 Info: ", "doc", doc.Info)
+	}
+	return osv, nil
+}
+
+func (pv K8SBasedPlatformVersioner) TestLookupVersion4(client Discoverer, cfg *rest.Config) (OpenShiftVersion, error) {
+
+	//ClusterVersionApiPath = "apis/config.openshift.io/v1/clusteroperators/openshift-apiserver"
+	osv := OpenShiftVersion{}
+	client, _, err := pv.DefaultArgs(nil, nil)
+	if err != nil {
+		log.Info("issue occurred while defaulting args for version lookup")
+		return osv, err
+	}
+	rest := client.RESTClient().Get().AbsPath(ClusterVersionApiPath)
+
+	result := rest.Do()
+	if result.Error() != nil {
+		log.Info("issue making API version rest call: " + result.Error().Error())
+		return osv, result.Error()
+	}
+
+	// error handling before/after Raw() seems redundant, but error detail can be lost in convert
+	body, err := result.Raw()
+	if err != nil {
+		log.Info("issue pulling raw result from API call")
+		return osv, err
+	}
+
+	var cvi PlatformClusterInfo
+	err = json.Unmarshal(body, &cvi)
+	if err != nil {
+		log.Info("issue occurred while unmarshalling PlatformClusterInfo")
+		return osv, err
+	}
+	osv.Version = cvi.Status.Desired.Version
+	log.Info("Infov4 : ", osv)
+
 	return osv, nil
 }

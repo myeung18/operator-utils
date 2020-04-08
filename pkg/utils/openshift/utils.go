@@ -41,6 +41,12 @@ func LookupOpenShiftVersion(cfg *rest.Config) (platform.OpenShiftVersion, error)
 	return platform.K8SBasedPlatformVersioner{}.LookupOpenShiftVersion(nil, cfg)
 }
 
+func LookupOpenShiftVersion4(cfg *rest.Config) (platform.OpenShiftVersion, error) {
+	return platform.K8SBasedPlatformVersioner{}.TestLookupVersion4(nil, cfg)
+}
+func LookupOpenShiftVersion3(cfg *rest.Config) (platform.OpenShiftVersion, error) {
+	return platform.K8SBasedPlatformVersioner{}.TestLookupVersion3(nil, cfg)
+}
 /*
 MapKnownVersion maps from K8S version of PlatformInfo to equivalent OpenShift version
 
@@ -57,7 +63,7 @@ func MapKnownVersion(info platform.PlatformInfo) platform.OpenShiftVersion {
 	return platform.OpenShiftVersion{Version: k8sToOcpMap[info.K8SVersion]}
 }
 
-func CompareOpenShiftVersion(cfg *rest.Config, version string) (int, error) {
+func CompareOpenShiftVersions(cfg *rest.Config, version string) (int, error) {
 	isOcp, err := IsOpenShift(cfg)
 	if err != nil {
 		return -1, err
@@ -65,12 +71,11 @@ func CompareOpenShiftVersion(cfg *rest.Config, version string) (int, error) {
 	if !isOcp {
 		return -1, errors.New("There is no OpenShift platform detected.")
 	}
-	info, err := GetPlatformInfo(cfg)
+	info, err := LookupOpenShiftVersion(cfg)
 	if err != nil {
 		return -1, err
 	}
-	curVersion := MapKnownVersion(info)
-	return CompareVersion(curVersion.Version, version)
+	return CompareVersions(info.Version, version)
 }
 
 /*
@@ -82,7 +87,7 @@ return:
      1 : if ver1 > ver2
 The int value returned should be discarded if err is not nil
  */
-func CompareVersion(ver1 string, ver2 string) (int, error) {
+func CompareVersions(ver1 string, ver2 string) (int, error) {
 	ver1Nums := strings.Split(ver1, ".")
 	ver2Nums := strings.Split(ver2, ".")
 	length := len(ver1Nums)

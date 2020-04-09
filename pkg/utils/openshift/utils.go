@@ -41,6 +41,10 @@ func LookupOpenShiftVersion(cfg *rest.Config) (platform.OpenShiftVersion, error)
 	return platform.K8SBasedPlatformVersioner{}.LookupOpenShiftVersion(nil, cfg)
 }
 
+func LookupOpenShiftSemVer(cfg *rest.Config) (platform.OpenShiftVersion, error) {
+	return platform.K8SBasedPlatformVersioner{}.LookupClusterVersionSemVer(nil, cfg)
+}
+
 func LookupOpenShiftVersion4(cfg *rest.Config) (platform.OpenShiftVersion, error) {
 	return platform.K8SBasedPlatformVersioner{}.TestLookupVersion4(nil, cfg)
 }

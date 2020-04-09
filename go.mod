@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
+	github.com/coreos/go-semver v0.3.0
 	github.com/coreos/prometheus-operator v0.35.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v0.1.0

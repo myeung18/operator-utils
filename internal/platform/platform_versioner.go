@@ -3,13 +3,17 @@ package platform
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/coreos/go-semver/semver"
 	openapi_v2 "github.com/googleapis/gnostic/OpenAPIv2"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/version"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
+	configv1client "github.com/openshift/client-go/config/clientset/versioned"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
@@ -163,7 +167,6 @@ func (pv K8SBasedPlatformVersioner) TestLookupVersion3(client Discoverer, cfg *r
 
 func (pv K8SBasedPlatformVersioner) TestLookupVersion4(client Discoverer, cfg *rest.Config) (OpenShiftVersion, error) {
 
-	//ClusterVersionApiPath = "apis/config.openshift.io/v1/clusteroperators/openshift-apiserver"
 	osv := OpenShiftVersion{}
 	client, _, err := pv.DefaultArgs(nil, nil)
 	if err != nil {
@@ -194,5 +197,52 @@ func (pv K8SBasedPlatformVersioner) TestLookupVersion4(client Discoverer, cfg *r
 	osv.Version = cvi.Status.Desired.Version
 	log.Info("Infov4 : ", osv)
 
+	return osv, nil
+}
+
+func (pv K8SBasedPlatformVersioner)  LookupClusterVersionSemVer(client Discoverer, config *rest.Config) (OpenShiftVersion, error) {
+	osv := OpenShiftVersion{}
+	//client, _, err := pv.DefaultArgs(nil, nil)
+	//if err != nil {
+	//	log.Info("issue occurred while defaulting args for version lookup")
+	//	return osv, err
+	//}
+
+	configClient, err := configv1client.NewForConfig(config)
+	if err != nil {
+		log.Error(err, "Failed to create config client")
+		return osv, err
+	}
+
+	var openShiftSemVer *semver.Version
+	clusterVersion, err := configClient.
+		ConfigV1().
+		ClusterVersions().
+		Get("version", metav1.GetOptions{})
+
+	log.Info("print1: ", "ver: " , configClient.ConfigV1())
+	log.Info("print2: ", "ver: " , configClient.ConfigV1().ClusterVersions())
+	if err != nil {
+		log.Info("err != nil : ", "ver: " , semver.Version{})
+		if errors.IsNotFound(err) {
+			// default to OpenShift 3 as ClusterVersion API was introduced in OpenShift 4
+			openShiftSemVer, _ = semver.NewVersion("3")
+		} else {
+			log.Error(err, "Failed to get OpenShift cluster version")
+			return osv, err
+		}
+	} else {
+		//latest version from the history
+		log.Info("err == nil : ", "ver: " , semver.Version{})
+		v := clusterVersion.Status.History[0].Version
+		openShiftSemVer, err = semver.NewVersion(v)
+		if err != nil {
+			log.Error(err, "Failed to get OpenShift cluster version")
+			return osv, err
+		}
+	}
+
+	fmt.Println("openShiftSemVer-config semVer ", openShiftSemVer)
+	log.Info("openShiftSemVer-config semVer:", "ver: " , openShiftSemVer)
 	return osv, nil
 }

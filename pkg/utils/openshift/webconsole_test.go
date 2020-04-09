@@ -23,9 +23,20 @@ func TestOpenshift(t *testing.T) {
 	fmt.Println(kubeconfig)
 	info, err := GetPlatformInfo(kubeconfig)
 
+
+	info0, err := LookupOpenShiftSemVer(kubeconfig)
+	fmt.Println("info0:", info0)
+
 	fmt.Println("------")
 	info2, err := LookupOpenShiftVersion(kubeconfig)
 	fmt.Println("info2:", info2, " - ",  MapKnownVersion(info))
+
+	info3, err := LookupOpenShiftVersion3(kubeconfig)
+	fmt.Println("info3: " , info3)
+
+	info4, err := LookupOpenShiftVersion4(kubeconfig)
+	fmt.Println("info4: " , info4)
+
 
 	versionStr := MapKnownVersion(info)
 	fmt.Println("info:", info, "ocp:", versionStr)

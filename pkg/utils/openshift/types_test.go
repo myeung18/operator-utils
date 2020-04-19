@@ -1,4 +1,4 @@
-package platform
+package openshift
 
 import (
 	"github.com/stretchr/testify/assert"

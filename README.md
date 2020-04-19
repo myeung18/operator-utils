@@ -207,7 +207,7 @@ To detect platform whether operator is running on kuberenete or openshift  or wh
 ```go
   info, err := pv.GetPlatformInfo(c.discoverer, c.config)
 ```
-A full example is provided [here](./internal/platform/platform_versioner_test.go)
+A full example is provided [here](pkg/utils/platform/platform_versioner_test.go)
 
 ## Who is using this Library
 

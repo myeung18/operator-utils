@@ -1,4 +1,4 @@
-package platform
+package openshift
 
 import (
 	"testing"
@@ -229,7 +229,7 @@ func TestClientCallVersionComparsion(t *testing.T) {
 
 	versionToTest := "v4.3"
 	for _, tc := range testcases {
-		res, err := pv.CompareOpenShiftVersions(tc.discoverer, versionToTest, tc.config)
+		res, err := pv.compareOpenShiftVersions(tc.discoverer, versionToTest, tc.config)
 		if tc.expectedErr {
 			assert.Error(t, err, "expected error-"+tc.label)
 		} else {

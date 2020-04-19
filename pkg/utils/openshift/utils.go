@@ -1,7 +1,6 @@
 package openshift
 
 import (
-	"github.com/RHsyseng/operator-utils/internal/platform"
 	"k8s.io/client-go/rest"
 )
 
@@ -11,8 +10,8 @@ Accepts <nil> or instantiated 'cfg' rest config parameter.
 
 Result: PlatformInfo{ Name: OpenShift, K8SVersion: 1.13+, OS: linux/amd64 }
 */
-func GetPlatformInfo(cfg *rest.Config) (platform.PlatformInfo, error) {
-	return platform.K8SBasedPlatformVersioner{}.GetPlatformInfo(nil, cfg)
+func GetPlatformInfo(cfg *rest.Config) (PlatformInfo, error) {
+	return K8SBasedPlatformVersioner{}.GetPlatformInfo(nil, cfg)
 }
 
 /*
@@ -35,8 +34,8 @@ Accepts <nil> or instantiated 'cfg' rest config parameter.
 
 Result: OpenShiftVersion{ Version: 4.1.2 }
 */
-func LookupOpenShiftVersion(cfg *rest.Config) (platform.OpenShiftVersion, error) {
-	return platform.K8SBasedPlatformVersioner{}.LookupOpenShiftVersion(nil, cfg)
+func LookupOpenShiftVersion(cfg *rest.Config) (OpenShiftVersion, error) {
+	return K8SBasedPlatformVersioner{}.LookupOpenShiftVersion(nil, cfg)
 }
 
 /*
@@ -50,7 +49,7 @@ return:
 The int value returned should be discarded if err is not nil
 */
 func CompareOpenShiftVersions(version string, cfg ...*rest.Config) (int, error) {
-	return platform.K8SBasedPlatformVersioner{}.CompareOpenShiftVersions(nil, version, cfg)
+	return K8SBasedPlatformVersioner{}.compareOpenShiftVersions(nil, version, cfg)
 }
 
 /*
@@ -62,7 +61,7 @@ return:
 The int value returned should be discarded if err is not nil
  */
 func CompareVersions(version1 string, version2 string) int {
-	return platform.K8SBasedPlatformVersioner{}.CompareVersions(version1, version2)
+	return K8SBasedPlatformVersioner{}.CompareVersions(version1, version2)
 }
 
 /*
@@ -70,6 +69,6 @@ MapKnownVersion maps from K8S version of PlatformInfo to equivalent OpenShift ve
 
 Result: OpenShiftVersion{ Version: v4.1 }
 */
-func MapKnownVersion(info platform.PlatformInfo) platform.OpenShiftVersion {
-	return platform.MapKnownVersion(info)
+func MapKnownVersionx(info PlatformInfo) OpenShiftVersion {
+	return MapKnownVersion(info)
 }

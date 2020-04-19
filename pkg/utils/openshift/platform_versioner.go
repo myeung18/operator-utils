@@ -1,4 +1,4 @@
-package platform
+package openshift
 
 import (
 	"encoding/json"
@@ -53,7 +53,7 @@ func MapKnownVersion(info PlatformInfo) OpenShiftVersion {
 }
 
 // deal with cfg coming from legacy method signature and allow injection for client testing
-func (K8SBasedPlatformVersioner) DefaultArgs(client Discoverer, cfg *rest.Config) (Discoverer, *rest.Config, error) {
+func (K8SBasedPlatformVersioner) defaultArgs(client Discoverer, cfg *rest.Config) (Discoverer, *rest.Config, error) {
 	if cfg == nil {
 		var err error
 		cfg, err = config.GetConfig()
@@ -76,7 +76,7 @@ func (pv K8SBasedPlatformVersioner) GetPlatformInfo(client Discoverer, cfg *rest
 	info := PlatformInfo{Name: Kubernetes}
 
 	var err error
-	client, cfg, err = pv.DefaultArgs(client, cfg)
+	client, cfg, err = pv.defaultArgs(client, cfg)
 	if err != nil {
 		log.Info("issue occurred while defaulting client/cfg args")
 		return info, err
@@ -115,7 +115,7 @@ REST call URL requiring permissions: /apis/config.openshift.io/v1/clusterversion
 func (pv K8SBasedPlatformVersioner) LookupOpenShiftVersion(client Discoverer, cfg *rest.Config) (OpenShiftVersion, error) {
 
 	osv := OpenShiftVersion{}
-	client, _, err := pv.DefaultArgs(nil, nil)
+	client, _, err := pv.defaultArgs(nil, nil)
 	if err != nil {
 		log.Info("issue occurred while defaulting args for version lookup")
 		return osv, err
@@ -158,7 +158,7 @@ func (pv K8SBasedPlatformVersioner) LookupOpenShiftVersion(client Discoverer, cf
 	return osv, nil
 }
 
-func (pv K8SBasedPlatformVersioner) CompareOpenShiftVersions(client Discoverer, version string, cfg[] *rest.Config) (int, error) {
+func (pv K8SBasedPlatformVersioner) compareOpenShiftVersions(client Discoverer, version string, cfg[] *rest.Config) (int, error) {
 	if version == "" || version != semver.MajorMinor(version) {
 		return -1, errors.New("input version is not in correct semantic format:" + version)
 	}
@@ -182,3 +182,4 @@ func (pv K8SBasedPlatformVersioner) CompareOpenShiftVersions(client Discoverer, 
 func (pv K8SBasedPlatformVersioner) CompareVersions(version1 string, version2 string) int {
 	return OpenShiftVersion{Version: version1}.Compare(OpenShiftVersion{Version: version2});
 }
+

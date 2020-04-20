@@ -1,4 +1,4 @@
-module github.com/RHsyseng/operator-utils
+module github.com/myeung18/operator-utils
 
 go 1.12
 

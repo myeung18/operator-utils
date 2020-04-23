@@ -5,6 +5,7 @@ import (
 	"errors"
 	openapi_v2 "github.com/googleapis/gnostic/OpenAPIv2"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/version"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
@@ -26,6 +27,7 @@ type Discoverer interface {
 	ServerGroups() (*v1.APIGroupList, error)
 	OpenAPISchema() (*openapi_v2.Document, error)
 	RESTClient() rest.Interface
+	ServerResourcesForGroupVersion(groupVersion string) (resources *metav1.APIResourceList, err error)
 }
 
 type K8SBasedPlatformVersioner struct{}
@@ -163,4 +165,26 @@ func (pv K8SBasedPlatformVersioner) CompareOpenShiftVersion(client Discoverer, c
 	}
 	curVersion := MapKnownVersion(info)
 	return curVersion.Compare(OpenShiftVersion{Version: version})
+}
+
+func (pv K8SBasedPlatformVersioner) CustomResourceExists(groupVersion string, apiResource string, client Discoverer, cfgs []*rest.Config) (bool, error) {
+	var err error
+	if len(cfgs) > 0 {
+		client, _, err = pv.DefaultArgs(client, cfgs[0])
+	} else {
+		client, _, err = pv.DefaultArgs(client, nil)
+	}
+	if err != nil {
+		return false, errors.New("issue occurred while defaulting args for groupVersion lookup:" + err.Error())
+	}
+	apis, err := client.ServerResourcesForGroupVersion(groupVersion)
+	if err != nil {
+		return false, errors.New("not getting group version: " + err.Error())
+	}
+	for _, api := range apis.APIResources {
+		if api.Name == apiResource {
+			return true, nil
+		}
+	}
+	return false, errors.New(apiResource + " is not defined in this group:" + groupVersion)
 }

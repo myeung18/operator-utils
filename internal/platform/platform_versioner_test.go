@@ -1,14 +1,14 @@
 package platform
 
 import (
-	"testing"
-
 	openapi_v2 "github.com/googleapis/gnostic/OpenAPIv2"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/version"
 	"k8s.io/client-go/rest"
+	"testing"
 )
 
 type FakeDiscoverer struct {
@@ -17,6 +17,7 @@ type FakeDiscoverer struct {
 	groupList          *v1.APIGroupList
 	doc                *openapi_v2.Document
 	client             rest.Interface
+	apiResourceList    *metav1.APIResourceList
 	ServerVersionError error
 	ServerGroupsError  error
 	OpenAPISchemaError error
@@ -57,6 +58,10 @@ func (pv FakePlatformVersioner) GetPlatformInfo(d Discoverer, cfg *rest.Config) 
 		return pv.Info, pv.Err
 	}
 	return pv.Info, nil
+}
+
+func (d FakeDiscoverer) ServerResourcesForGroupVersion(groupVersion string) (resources *metav1.APIResourceList, err error) {
+	return d.apiResourceList, nil
 }
 
 func TestK8SBasedPlatformVersioner_GetPlatformInfo(t *testing.T) {
@@ -142,7 +147,7 @@ func TestClientCallVersionComparsion(t *testing.T) {
 		label        string
 		discoverer   Discoverer
 		config       *rest.Config
-		expectedInfo  int
+		expectedInfo int
 		expectedErr  bool
 	}{
 		{
@@ -220,5 +225,83 @@ func TestClientCallVersionComparsion(t *testing.T) {
 			assert.NoError(t, err, "unexpected error")
 		}
 		assert.Equal(t, tc.expectedInfo, res, "The expected and actual versions should be the same.")
+	}
+}
+
+func TestConsoleYAMLSamplesExists(t *testing.T) {
+	pv := K8SBasedPlatformVersioner{}
+	testcases := []struct {
+		label        string
+		discoverer   Discoverer
+		config       *rest.Config
+		expectedInfo bool
+		expectedErr  bool
+	}{
+		{
+			label: "case 1",
+			discoverer: FakeDiscoverer{
+				serverInfo: &version.Info{
+					Major: "1",
+					Minor: "16",
+				},
+				groupList: &v1.APIGroupList{
+					TypeMeta: v1.TypeMeta{},
+					Groups:   []v1.APIGroup{{Name: "console.openshift.io/v1"}},
+				},
+				apiResourceList: &metav1.APIResourceList{
+					GroupVersion: "console.openshift.io/v1",
+					APIResources: []metav1.APIResource{{Name: "consoleyamlsamples"}}},
+			},
+			config:       &rest.Config{},
+			expectedInfo: true,
+			expectedErr:  false,
+		},
+		{
+			label: "case 2",
+			discoverer: FakeDiscoverer{
+				serverInfo: &version.Info{
+					Major: "1",
+					Minor: "13",
+				},
+				groupList: &v1.APIGroupList{
+					TypeMeta: v1.TypeMeta{},
+					Groups:   []v1.APIGroup{{Name: "console.openshift.io/v1"}},
+				},
+				apiResourceList: &metav1.APIResourceList{
+					GroupVersion: "console.openshift.io/v1",
+					APIResources: []metav1.APIResource{{Name: "consolelinks"}}},
+			},
+			config:       &rest.Config{},
+			expectedInfo: false,
+			expectedErr:  true,
+		},
+		{
+			label: "case 3",
+			discoverer: FakeDiscoverer{
+				serverInfo: &version.Info{
+					Major: "1",
+					Minor: "13",
+				},
+				groupList: &v1.APIGroupList{
+					TypeMeta: v1.TypeMeta{},
+					Groups:   []v1.APIGroup{{Name: "console.unknown.io/v1"}},
+				},
+				apiResourceList: &metav1.APIResourceList{
+					GroupVersion: "console.openshift.io/v1",
+					APIResources: []metav1.APIResource{{Name: "consolelinks"}}},
+			},
+			config:       &rest.Config{},
+			expectedInfo: false,
+			expectedErr:  true,
+		},
+	}
+	for _, tc := range testcases {
+		res, err := pv.ConsoleYAMLSamplesExists(tc.discoverer, tc.config)
+		if tc.expectedErr {
+			assert.Error(t, err, "expected error-"+tc.label)
+		} else {
+			assert.NoError(t, err, "unexpected error-"+tc.label)
+		}
+		assert.Equal(t, tc.expectedInfo,res, "The expected and actual versions should be the same " + tc.label)
 	}
 }

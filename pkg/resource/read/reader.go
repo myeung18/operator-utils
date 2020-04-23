@@ -2,7 +2,7 @@ package read
 
 import (
 	"context"
-	"github.com/RHsyseng/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"

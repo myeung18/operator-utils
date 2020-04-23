@@ -2,7 +2,7 @@ package test
 
 import (
 	"context"
-	"github.com/RHsyseng/operator-utils/pkg/logs"
+	"github.com/myeung18/operator-utils/pkg/logs"
 	oappsv1 "github.com/openshift/api/apps/v1"
 	buildv1 "github.com/openshift/api/build/v1"
 	consolev1 "github.com/openshift/api/console/v1"

@@ -2,7 +2,7 @@ package openshift
 
 import (
 	"errors"
-	"github.com/RHsyseng/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/resource"
 	"github.com/ghodss/yaml"
 	consolev1 "github.com/openshift/api/console/v1"
 	amv1 "k8s.io/apimachinery/pkg/apis/meta/v1"

@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
+	github.com/ash2k/stager v0.0.0-20170622123058-6e9c7b0eacd4
 	github.com/coreos/prometheus-operator v0.35.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v0.1.0
@@ -39,6 +40,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	k8s.io/api v0.17.2
+	k8s.io/apiextensions-apiserver v0.0.0-20191016113550-5357c4baaf65
 	k8s.io/apimachinery v0.17.2
 	k8s.io/client-go v12.0.0+incompatible
 	sigs.k8s.io/controller-runtime v0.4.0

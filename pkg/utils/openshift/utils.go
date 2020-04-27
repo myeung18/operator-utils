@@ -1,8 +1,12 @@
 package openshift
 
 import (
+	"errors"
 	"github.com/RHsyseng/operator-utils/internal/platform"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
+	"sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
 /*
@@ -57,6 +61,90 @@ func MapKnownVersion(info platform.PlatformInfo) platform.OpenShiftVersion {
 	return platform.MapKnownVersion(info)
 }
 
-func CustomResourceExists(groupVersion string, apiResource string, cfg ...*rest.Config) (bool, error) {
-	return platform.K8SBasedPlatformVersioner{}.CustomResourceExists(groupVersion, apiResource, nil, cfg)
+func CustomResourceExistsDirect(groupVersion string, apiResource string, cfg ...*rest.Config) (bool, error) {
+	var client *discovery.DiscoveryClient
+	var err error
+	if len(cfg) > 0 {
+		client, err = getDiscoveryClient(client, cfg[0])
+	} else {
+		client, err = getDiscoveryClient(client, nil)
+	}
+	if err != nil {
+		return false, errors.New("issue occurred while defaulting args for groupVersion lookup:" + err.Error())
+	}
+	return getCustomResource(groupVersion, apiResource, client)
 }
+
+func getDiscoveryClient(client *discovery.DiscoveryClient, cfg *rest.Config) (*discovery.DiscoveryClient, error) {
+	if cfg == nil {
+		var err error
+		cfg, err = config.GetConfig()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if client == nil {
+		var err error
+		client, err = discovery.NewDiscoveryClientForConfig(cfg)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return client, nil
+}
+
+/***********************************************************************************************/
+
+func CustomResourceExists(groupVersion string, apiResource string, cfg ...*rest.Config) (bool, error) {
+	return OCPPlatformService{}.customResourceExists(groupVersion, apiResource, nil, cfg)
+}
+
+func (ocp OCPPlatformService) customResourceExists(groupVersion string, apiResource string, client PlatformService, cfg []*rest.Config) (bool, error) {
+	var err error
+	if len(cfg) > 0 {
+		client, err = ocp.getDiscoveryClient(client, cfg[0])
+	} else {
+		client, err = ocp.getDiscoveryClient(client, nil)
+	}
+	if err != nil {
+		return false, errors.New("issue occurred while defaulting args for groupVersion lookup:" + err.Error())
+	}
+	return getCustomResource(groupVersion, apiResource, client)
+}
+
+func getCustomResource(groupVersion string, apiResource string, client PlatformService) (bool, error) {
+	apis, err := client.ServerResourcesForGroupVersion(groupVersion)
+	if err != nil {
+		return false, errors.New("not getting group version: " + err.Error())
+	}
+	for _, api := range apis.APIResources {
+		if api.Name == apiResource {
+			return true, nil
+		}
+	}
+	return false, errors.New(apiResource + " is not defined in this group:" + groupVersion)
+}
+
+func (ocp OCPPlatformService) getDiscoveryClient(client PlatformService, cfg *rest.Config) (PlatformService, error) {
+	if cfg == nil {
+		var err error
+		cfg, err = config.GetConfig()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if client == nil {
+		var err error
+		client, err = discovery.NewDiscoveryClientForConfig(cfg)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return client, nil
+}
+
+type PlatformService interface {
+	ServerResourcesForGroupVersion(groupVersion string) (resources *metav1.APIResourceList, err error)
+}
+
+type OCPPlatformService struct{}

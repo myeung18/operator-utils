@@ -3,7 +3,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	"github.com/RHsyseng/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"strings"

@@ -1,11 +1,22 @@
 package openshift
 
 import (
-	"github.com/RHsyseng/operator-utils/internal/platform"
+	"fmt"
+	"github.com/myeung18/operator-utils/internal/platform"
+	"github.com/myeung18/operator-utils/pkg/utils/openshift/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
+func TestAny(t *testing.T) {
+	cfg, _:= utils.GetConfig();
+	cmp, _ := CompareOpenShiftVersions("v4.3", cfg)
+	fmt.Println(cmp)
+
+	cmp = CompareVersions("v4.1", "v4.4")
+	fmt.Println(cmp)
+
+}
 func TestOpenShiftVersion_MapKnownVersion(t *testing.T) {
 
 	cases := []struct {

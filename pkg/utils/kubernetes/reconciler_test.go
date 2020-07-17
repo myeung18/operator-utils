@@ -3,8 +3,8 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	"github.com/RHsyseng/operator-utils/pkg/resource"
-	"github.com/RHsyseng/operator-utils/pkg/test"
+	"github.com/myeung18/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/test"
 	"github.com/stretchr/testify/assert"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

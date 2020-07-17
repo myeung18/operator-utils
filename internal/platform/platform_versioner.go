@@ -48,6 +48,8 @@ func MapKnownVersion(info PlatformInfo) OpenShiftVersion {
 		"1.14":  "v4.2",
 		"1.16+": "v4.3",
 		"1.16":  "v4.3",
+		"1.17+": "v4.4",
+		"1.17":  "v4.4",
 	}
 	return OpenShiftVersion{Version: semver.MajorMinor(k8sToOcpMap[info.K8SVersion])}
 }

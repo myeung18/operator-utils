@@ -1,7 +1,7 @@
 package openshift
 
 import (
-	"github.com/RHsyseng/operator-utils/internal/platform"
+	"github.com/myeung18/operator-utils/internal/platform"
 	"k8s.io/client-go/rest"
 )
 
@@ -44,15 +44,18 @@ Compare the runtime OpenShift with the version passed in.
 version: Semantic format
 cfg : OpenShift platform config, use runtime config if nil is passed in.
 return:
-	-1 : if ver1 < ver2
-	 0 : if ver1 == ver2
-     1 : if ver1 > ver2
+	-1 : if version > Ocpversion
+	 0 : if version == Ocpversion
+     1 : if version < Ocpversion
 The int value returned should be discarded if err is not nil
 */
 func CompareOpenShiftVersions(version string, cfg ...*rest.Config) (int, error) {
 	return platform.K8SBasedPlatformVersioner{}.CompareOpenShiftVersions(nil, version, cfg)
 }
 
+func GetOpenShiftVersion(version string, cfg ...*rest.Config) (int, error) {
+	return platform.K8SBasedPlatformVersioner{}.CompareOpenShiftVersions(nil, version, cfg)
+}
 /*
 version: Semantic format
 return:
@@ -60,7 +63,7 @@ return:
 	 0 : if ver1 == ver2
      1 : if ver1 > ver2
 The int value returned should be discarded if err is not nil
- */
+*/
 func CompareVersions(version1 string, version2 string) int {
 	return platform.K8SBasedPlatformVersioner{}.CompareVersions(version1, version2)
 }

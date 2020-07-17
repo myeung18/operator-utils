@@ -2,7 +2,7 @@ package kubernetes
 
 import (
 	"context"
-	"github.com/RHsyseng/operator-utils/pkg/logs"
+	"github.com/myeung18/operator-utils/pkg/logs"
 
 	imagev1 "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	"k8s.io/apimachinery/pkg/runtime"

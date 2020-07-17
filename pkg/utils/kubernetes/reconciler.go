@@ -2,7 +2,7 @@ package kubernetes
 
 import (
 	"context"
-	"github.com/RHsyseng/operator-utils/pkg/resource"
+	"github.com/myeung18/operator-utils/pkg/resource"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
